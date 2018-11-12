@@ -6,6 +6,8 @@ set -o nounset
 BITRATE_THRESHOLD=128
 TRANSCODE_BITRATE=64
 
+convert_dir="/tmp/mp3_convert"
+
 error() {
   echo "An error has occurred. Terminating"
   exit 1
@@ -14,8 +16,8 @@ error() {
 trap error INT TERM EXIT
 
 # Fail and exit if we don't have ffmpeg with libopus, or parallel.
-ffmpeg -version | grep -- '--enable-libopus'
-command -v parallel
+ffmpeg -version | grep -- '--enable-libopus' > /dev/null
+command -v parallel > /dev/null
 
 dest_location=$1
 
@@ -36,7 +38,6 @@ while IFS=  read -r -d $'\0' filename; do
 
   done < <(find "${PWD}/${dest_location}" -name '*.mp3' -print0)
 
-convert_dir="/tmp/mp3_convert"
 convert_func() {
     transcode_bitrate=$1
     convert_dir="$2"
