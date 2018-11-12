@@ -39,14 +39,20 @@ convert_func() {
     filename="$3"
     job_id="$4"
 
-    echo "Converting ${filename}..."
-    echo "${convert_dir}/${job_id}.mp3" "${filename}"
-    ffmpeg -hide_banner -loglevel info \
-      -i "${filename}" -codec:a libmp3lame \
-      -b:a "${transcode_bitrate}k" "${convert_dir}/${job_id}.mp3"
-    mv "${convert_dir}/${job_id}.mp3" "${filename}"
+    dest_filename="${filename%.*}.opus"
 
-    rm -f "${convert_dir}/${job_id}.mp3"
+    if [ -f "${dest_filename}" ]; then
+        echo "${dest_filename} already exists!"
+        return 0
+    fi
+
+    echo "Converting ${filename}..."
+    ffmpeg -hide_banner -loglevel info \
+      -i "${filename}" -codec:a libopus \
+      -b:a "${transcode_bitrate}k" "${convert_dir}/${job_id}.opus" && \
+      mv "${convert_dir}/${job_id}.opus" "${dest_filename}"
+
+    rm -f "${convert_dir}/${job_id}.opus"
 }
 export -f convert_func
 
