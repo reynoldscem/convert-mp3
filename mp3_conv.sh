@@ -6,6 +6,10 @@ set -o nounset
 BITRATE_THRESHOLD=128
 TRANSCODE_BITRATE=64
 
+# Fail and exit if we don't have ffmpeg with libopus, or parallel.
+ffmpeg -version | grep -- '--enable-libopusdd'
+command -v parallel
+
 error() {
   echo "An error has occurred. Terminating"
   exit 1
